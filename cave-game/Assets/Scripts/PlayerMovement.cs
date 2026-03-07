@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 public class PlayerMovement : MonoBehaviour
 {
   public float speed = 5f;
+  public float sprintMultiplier = 2f;
   private Rigidbody rb;
 
   void Start()
@@ -19,8 +20,11 @@ public class PlayerMovement : MonoBehaviour
     if (Keyboard.current.wKey.isPressed) input.y += 1;
     if (Keyboard.current.sKey.isPressed) input.y -= 1;
 
+    bool isSprinting = Keyboard.current.leftShiftKey.isPressed;
+    float currentSpeed = isSprinting ? speed * sprintMultiplier : speed;
+
     Vector3 move = transform.right * input.x + transform.forward * input.y;
-    move = move.normalized * speed;
+    move = move.normalized * currentSpeed;
     move.y = rb.linearVelocity.y;
     rb.linearVelocity = move;
   }
