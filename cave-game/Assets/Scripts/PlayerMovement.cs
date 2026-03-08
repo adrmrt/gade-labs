@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-  public float speed = 5f;
+  public float speed = 10f;
   public float sprintMultiplier = 2f;
   private Rigidbody rb;
 
