@@ -4,8 +4,6 @@ using UnityEngine.InputSystem;
 public class PlayerDeath : MonoBehaviour
 {
   public AudioSource deathSound;
-
-  public GameObject deathScreen;
   private bool isDead = false;
 
   void Update()
@@ -28,15 +26,18 @@ public class PlayerDeath : MonoBehaviour
 
   void Die()
   {
+    if (isDead) return;
+
     deathSound.Play();
-
     isDead = true;
-    deathScreen.SetActive(true);
 
-    // Freeze player movement
+    HUDManager.Instance.AddDeath();
+    HUDManager.Instance.ShowDeathScreen();
+
+    FlashlightController.Instance.StopFlicker();
+
+    // Freeze player movement and disable controls
     GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
-
-    // Disable scripts
     GetComponent<PlayerMovement>().enabled = false;
     GetComponentInChildren<MouseLook>().enabled = false;
   }
