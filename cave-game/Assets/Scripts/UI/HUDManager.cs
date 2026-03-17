@@ -16,8 +16,6 @@ public class HUDManager : MonoBehaviour
   [Header("Death Screen")]
   public GameObject deathScreen;
 
-  private int deathCount = 0;
-
   void Awake()
   {
     if (Instance != null && Instance != this)
@@ -27,8 +25,19 @@ public class HUDManager : MonoBehaviour
     }
     Instance = this;
 
-    titleScreen.SetActive(true);
-    gameHUD.SetActive(false);
+    if (GameManager.Instance.IsFirstLoad)
+    {
+      GameManager.Instance.SetFirstLoadDone();
+      titleScreen.SetActive(true);
+      gameHUD.SetActive(false);
+    }
+    else
+    {
+      titleScreen.SetActive(false);
+      gameHUD.SetActive(true);
+      UpdateDeathCounter();
+    }
+
     deathScreen.SetActive(false);
   }
 
@@ -45,18 +54,18 @@ public class HUDManager : MonoBehaviour
 
   public void AddDeath()
   {
-    deathCount++;
-    UpdateDeathCounter();
+    if (GameManager.Instance != null)
+    {
+      GameManager.Instance.AddDeath();
+      UpdateDeathCounter();
+    }
   }
 
   private void UpdateDeathCounter()
   {
-    string skulls = "";
-    for (int i = 0; i < deathCount; i++)
-    {
-      skulls += "💀";
-    }
-    deathCounter.text = skulls;
+    deathCounter.text = "Deaths: " + GameManager.Instance.DeathCount;
+
+    Debug.Log($"Player has died {GameManager.Instance.DeathCount} times.");
   }
 
   public void ShowDeathScreen()

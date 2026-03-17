@@ -21,6 +21,16 @@ public class FlashlightController : MonoBehaviour
     flashlight.enabled = false;
   }
 
+  void Start()
+  {
+    if (GameManager.Instance.HasFlashlight)
+    {
+      flashlight.enabled = true;
+      if (!GameManager.Instance.HasBatteries)
+        StartCoroutine(Flicker());
+    }
+  }
+
   public void PickupFlashlight()
   {
     hasFlashlight = true;
@@ -38,6 +48,15 @@ public class FlashlightController : MonoBehaviour
   {
     StopAllCoroutines();
     flashlight.enabled = hasFlashlight;
+  }
+
+  public void ResumeFlicker()
+  {
+    if (hasFlashlight && !hasBatteries)
+    {
+      StopAllCoroutines();
+      StartCoroutine(Flicker());
+    }
   }
 
   private IEnumerator Flicker()

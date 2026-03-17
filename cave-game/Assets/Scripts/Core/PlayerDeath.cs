@@ -3,16 +3,18 @@ using UnityEngine.InputSystem;
 
 public class PlayerDeath : MonoBehaviour
 {
+  [Header("Audio")]
   public AudioSource deathSound;
+
+  public readonly Vector3 spawnPoint = new Vector3(0f, 1.25f, 0f);
+
   private bool isDead = false;
 
   void Update()
   {
     if (isDead && Keyboard.current.rKey.wasPressedThisFrame)
     {
-      UnityEngine.SceneManagement.SceneManager.LoadScene(
-        UnityEngine.SceneManagement.SceneManager.GetActiveScene().name
-      );
+      Respawn();
     }
   }
 
@@ -31,8 +33,11 @@ public class PlayerDeath : MonoBehaviour
     deathSound.Play();
     isDead = true;
 
-    HUDManager.Instance.AddDeath();
-    HUDManager.Instance.ShowDeathScreen();
+    if (HUDManager.Instance != null)
+    {
+      HUDManager.Instance.AddDeath();
+      HUDManager.Instance.ShowDeathScreen();
+    }
 
     FlashlightController.Instance.StopFlicker();
 
@@ -40,5 +45,24 @@ public class PlayerDeath : MonoBehaviour
     GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
     GetComponent<PlayerMovement>().enabled = false;
     GetComponentInChildren<MouseLook>().enabled = false;
+  }
+
+  void Respawn()
+  {
+    isDead = false;
+
+    transform.position = spawnPoint;
+    transform.rotation = Quaternion.identity;
+
+    GetComponent<PlayerMovement>().enabled = true;
+    GetComponentInChildren<MouseLook>().enabled = true;
+    GetComponent<Rigidbody>().linearVelocity = Vector3.zero;
+
+    FlashlightController.Instance.ResumeFlicker();
+
+    if (HUDManager.Instance != null)
+    {
+      HUDManager.Instance.HideDeathScreen();
+    }
   }
 }
